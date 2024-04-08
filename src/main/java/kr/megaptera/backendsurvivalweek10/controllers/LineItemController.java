@@ -9,6 +9,7 @@ import kr.megaptera.backendsurvivalweek10.dtos.ChangeCartLineItemDto;
 import kr.megaptera.backendsurvivalweek10.models.LineItemId;
 import kr.megaptera.backendsurvivalweek10.models.ProductId;
 import org.springframework.http.HttpStatus;
+import org.springframework.security.access.annotation.Secured;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.NoSuchElementException;
@@ -21,9 +22,9 @@ public class LineItemController {
     private final ChangeCartItemQuantityService changeCartItemQuantityService;
 
     public LineItemController(
-        GetCartService getCartService,
-        AddProductToCartService addProductToCartService,
-        ChangeCartItemQuantityService changeCartItemQuantityService) {
+            GetCartService getCartService,
+            AddProductToCartService addProductToCartService,
+            ChangeCartItemQuantityService changeCartItemQuantityService) {
         this.getCartService = getCartService;
         this.addProductToCartService = addProductToCartService;
         this.changeCartItemQuantityService = changeCartItemQuantityService;
@@ -36,6 +37,7 @@ public class LineItemController {
 
     @PostMapping
     @ResponseStatus(HttpStatus.CREATED)
+    @Secured({"ROLE_USER", "ROLE_ADMIN"})
     public void create(@RequestBody AddCartLineItemDto dto) {
         ProductId productId = new ProductId(dto.productId());
         int quantity = dto.quantity();
@@ -45,9 +47,10 @@ public class LineItemController {
 
     @PatchMapping("{id}")
     @ResponseStatus(HttpStatus.NO_CONTENT)
+    @Secured({"ROLE_USER", "ROLE_ADMIN"})
     public void update(
-        @PathVariable("id") String id,
-        @RequestBody ChangeCartLineItemDto dto) {
+            @PathVariable("id") String id,
+            @RequestBody ChangeCartLineItemDto dto) {
         LineItemId lineItemId = new LineItemId(id);
         int quantity = dto.quantity();
 

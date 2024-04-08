@@ -18,25 +18,25 @@ public class CartDtoFetcher {
 
     public CartDto fetchCartDto(CartId cartId) {
         String sql = """
-            SELECT
-                *,
-                products.name AS product_name
-            FROM line_items
-            JOIN products ON line_items.product_id = products.id
-            WHERE line_items.cart_id = ?
-            ORDER BY line_items.id
-            """;
+                  SELECT *,
+                         products.name AS product_name
+                    FROM line_items
+                    JOIN products ON line_items.product_id = products.id
+                    JOIN carts ON line_items.cart_id = carts.id
+                   WHERE carts.user_id = ?
+                ORDER BY line_items.id
+                    """;
 
         List<CartDto.LineItemDto> lineItemDtos = jdbcTemplate.query(
-            sql,
-            (ResultSet resultSet, int rowNum) -> new CartDto.LineItemDto(
-                resultSet.getString("id"),
-                resultSet.getString("product_name"),
-                resultSet.getLong("unit_price"),
-                resultSet.getInt("quantity"),
-                resultSet.getLong("total_price")
-            ),
-            cartId.toString()
+                sql,
+                (ResultSet resultSet, int rowNum) -> new CartDto.LineItemDto(
+                        resultSet.getString("id"),
+                        resultSet.getString("product_name"),
+                        resultSet.getLong("unit_price"),
+                        resultSet.getInt("quantity"),
+                        resultSet.getLong("total_price")
+                ),
+                cartId.toString()
         );
 
         return new CartDto(lineItemDtos);
